@@ -138,7 +138,7 @@ const PollData = ({ refreshData }) => {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{poll.name}</TableCell>
                 <TableCell>{poll.voting_choice ? 'Yes' : 'No'}</TableCell>
-                <TableCell>{poll.casted_at}</TableCell>
+                <TableCell>{moment(poll.casted_at).format('DD-MM-YYYY')}</TableCell>
                 <TableCell>
                   <IconButton sx={{ color: 'blue' }} onClick={() => handleEditClick(poll)}>
                     <EditIcon />

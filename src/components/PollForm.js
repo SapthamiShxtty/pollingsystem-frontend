@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, RadioGroup, FormControlLabel, Radio, Box, Snackbar, Alert } from '@mui/material';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from '@mui/x-date-pickers';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import moment from 'moment';
 
 const PollForm = ({ onSubmission }) => {
@@ -19,7 +17,7 @@ const PollForm = ({ onSubmission }) => {
     const payload = {
       name,
       voting_choice: voteChoice === 'true',
-      casted_at:  moment(castedAt, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+      casted_at:  moment(castedAt, 'YYYY-MM-DD').format('DD-MM-YYYY'),
     };
 
     try {
