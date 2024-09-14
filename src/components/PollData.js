@@ -29,7 +29,10 @@ const PollData = ({ refreshData }) => {
     const fetchData = async () => {
       try {
         const pollResponse = await axios.get('http://localhost:3000/api/votes');
-        setPolls(pollResponse.data);
+        setPolls(pollResponse.data.map(poll => ({
+          ...poll,
+          casted_at: moment(poll.casted_at, 'DD-MM-YYYY').format('YYYY-MM-DD')
+        })));
 
         const yesResponse = await axios.get('http://localhost:3000/api/votes/counts-by-choice?voting_choice=true');
         const noResponse = await axios.get('http://localhost:3000/api/votes/counts-by-choice?voting_choice=false');
