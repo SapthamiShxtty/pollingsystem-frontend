@@ -24,7 +24,8 @@ const PollData = ({ refreshData }) => {
   const [updatedCastedAt, setUpdatedCastedAt] = useState('');
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [pollToDelete, setPollToDelete] = useState(null);
-  
+  const [showGraphs, setShowGraphs] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -159,11 +160,22 @@ const PollData = ({ refreshData }) => {
         </Table>
       </TableContainer>
 
-      <h3>Voting Trends</h3>
-      {lineData && <Line data={lineData} options={{ responsive: true, maintainAspectRatio: true }} />}
+      <br></br>
+      <br></br>
 
-      <h3>Overall Voting Results</h3>
-      {barData && <Bar data={barData} options={{ responsive: true, maintainAspectRatio: true }} />}
+      <Button variant="contained" color="primary" onClick={() => setShowGraphs(!showGraphs)}>
+        {showGraphs ? 'Hide Graphs' : 'Show Graphs'}
+      </Button>
+
+      {showGraphs && (
+        <>
+          <h3>Voting Trends</h3>
+          {lineData && <Line data={lineData} options={{ responsive: true, maintainAspectRatio: true }} />}
+
+          <h3>Overall Voting Results</h3>
+          {barData && <Bar data={barData} options={{ responsive: true, maintainAspectRatio: true }} />}
+        </>
+      )}
 
       <Dialog
           open={editDialogOpen}
