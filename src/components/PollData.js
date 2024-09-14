@@ -9,9 +9,9 @@ import { Line, Bar } from 'react-chartjs-2';
 import moment from 'moment';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import { Stack } from '@mui/material';
-ChartJS.register(Title, Tooltip, Legend, LineElement, BarElement, CategoryScale, LinearScale);
+import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, BarElement, CategoryScale, LinearScale,PointElement } from 'chart.js';
+ChartJS.register(Title, Tooltip, Legend, LineElement, BarElement, CategoryScale, LinearScale, PointElement);
 
 const PollData = ({ refreshData }) => {
   const [polls, setPolls] = useState([]);
@@ -29,44 +29,47 @@ const PollData = ({ refreshData }) => {
     const fetchData = async () => {
       try {
         const pollResponse = await axios.get('http://localhost:3000/api/votes');
-        setPolls(pollResponse.data.map(poll => ({
-          ...poll,
-          casted_at: moment(poll.casted_at, 'DD-MM-YYYY').format('YYYY-MM-DD')
-        })));
+        setPolls(pollResponse.data);
 
-        const trueCountsResponse = await axios.get('http://localhost:3000/votes/counts-by-choice?voting_choice=true');
-        const falseCountsResponse = await axios.get('http://localhost:3000/votes/counts-by-choice?voting_choice=false');
+        const yesResponse = await axios.get('http://localhost:3000/api/votes/counts-by-choice?voting_choice=true');
+        const noResponse = await axios.get('http://localhost:3000/api/votes/counts-by-choice?voting_choice=false');
         
         const lineChartData = {
-          labels: trueCountsResponse.data.data.map(item => moment(item.casted_at, 'DD-MM-YYYY').format('YYYY-MM-DD')),
+          labels: yesResponse.data.data.map(item => moment(item.casted_at, 'YYYY-MM-DD').format('YYYY-MM-DD')), 
           datasets: [
             {
-              label: 'Yes',
-              data: trueCountsResponse.data.data.map(item => item.count),
+              label: 'Yes Votes',
+              data: yesResponse.data.data.map(item => item.count),
               fill: false,
               borderColor: 'green',
+              backgroundColor: 'green',
+              tension: 0.2,
             },
             {
-              label: 'No',
-              data: falseCountsResponse.data.data.map(item => item.count),
+              label: 'No Votes',
+              data: noResponse.data.data.map(item => item.count),
               fill: false,
               borderColor: 'red',
-            },
-          ],
+              backgroundColor: 'red',
+              tension: 0.2,
+            }
+          ]
         };
         setLineData(lineChartData);
 
         const resultsResponse = await axios.get('http://localhost:3000/api/votes/results');
         const barChartData = {
           labels: ['Yes', 'No'],
-          datasets: [{
-            label: 'Votes',
-            data: [
-              resultsResponse.data.data.find(item => item.voting_choice === true)?.count || 0,
-              resultsResponse.data.data.find(item => item.voting_choice === false)?.count || 0
-            ],
-            backgroundColor: ['green', 'red'],
-          }]
+          datasets: [
+            {
+              label: 'Total Votes',
+              data: [
+                resultsResponse.data.data.find(item => item.voting_choice === true)?.count || 0,
+                resultsResponse.data.data.find(item => item.voting_choice === false)?.count || 0
+              ],
+              backgroundColor: ['green', 'red'],
+            }
+          ]
         };
         setBarData(barChartData);
 
@@ -82,7 +85,7 @@ const PollData = ({ refreshData }) => {
     setSelectedPoll(poll);
     setUpdatedName(poll.name);
     setUpdatedVoteChoice(poll.voting_choice);
-    setUpdatedCastedAt(moment(poll.casted_at, 'YYYY-MM-DD').format('DD-MM-YYYY')); // Convert to DD-MM-YYYY
+    setUpdatedCastedAt(moment(poll.casted_at, 'YYYY-MM-DD').format('DD-MM-YYYY')); 
     setEditDialogOpen(true);
   };
 
@@ -154,11 +157,11 @@ const PollData = ({ refreshData }) => {
       </TableContainer>
 
       <h3>Voting Trends</h3>
-      {lineData && <Line data={lineData} />}
+      {lineData && <Line data={lineData} options={{ responsive: true, maintainAspectRatio: true }} />}
 
       <h3>Overall Voting Results</h3>
-      {barData && <Bar data={barData} />}
-      
+      {barData && <Bar data={barData} options={{ responsive: true, maintainAspectRatio: true }} />}
+
       <Dialog
           open={editDialogOpen}
           onClose={() => setEditDialogOpen(false)}
@@ -226,3 +229,9 @@ const PollData = ({ refreshData }) => {
 };
 
 export default PollData;
+
+
+
+
+
+
